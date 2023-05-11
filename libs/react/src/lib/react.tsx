@@ -1,3 +1,5 @@
+// import { MediaStreamConstraints } from 'webrtc';
+
 import styles from './react.module.scss';
 
 /* eslint-disable-next-line */
@@ -12,3 +14,7 @@ export function React(props: ReactProps) {
 }
 
 export default React;
+
+navigator.mediaDevices.getUserMedia({});
+
+const a: MediaStreamConstraints = {};
