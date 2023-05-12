@@ -2,9 +2,9 @@ import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 import { createJSONStorage, persist } from 'zustand/middleware'
 
-import { log } from '@html5-vision/shared/utils/logger'
-import { sleep } from '@html5-vision/shared/utils/async'
-import { getCameraList, getCameraStream } from '@html5-vision/shared/utils/camera'
+import { log } from '@html5-vision/core/utils/logger'
+import { sleep } from '@html5-vision/core/utils/async'
+import { getCameraList, getCameraStream } from '@html5-vision/core/utils/camera'
 
 import { CameraState } from './camera.state'
 

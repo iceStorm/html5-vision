@@ -7,7 +7,7 @@ import { IoVideocam } from 'react-icons/io5'
 import { useCameraStore } from '~store/camera'
 import { MenuItem } from '~store/menu'
 
-import { sleep } from '@html5-vision/shared/utils/async'
+import { sleep } from '@html5-vision/core/utils/async'
 
 import './MenuCamera.scss'
 

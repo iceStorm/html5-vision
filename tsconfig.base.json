@@ -15,9 +15,8 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@html5-vision/react": ["libs/react/src/index.ts"],
-      "@html5-vision/shared/models": ["libs/shared/models/src/index.ts"],
-      "@html5-vision/shared/utils/*": ["libs/shared/utils/src/lib/*"]
+      "@htm5-vision/core": ["libs/core/src/index.ts"],
+      "@html5-vision/react": ["libs/react/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

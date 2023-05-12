@@ -4,7 +4,7 @@ import { clsx } from 'clsx'
 import { shallow } from 'zustand/shallow'
 import { AnimatePresence, motion } from 'framer-motion'
 
-import { log } from '@html5-vision/shared/utils/logger'
+import { log } from '@html5-vision/core/utils/logger'
 
 import { useCameraStore } from '~store/camera'
 import { useMenuStore } from '~store/menu'

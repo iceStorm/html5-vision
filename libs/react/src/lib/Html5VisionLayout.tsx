@@ -4,8 +4,8 @@ import { ConditionalPick } from 'type-fest'
 import { shallow } from 'zustand/shallow'
 import { AnimatePresence, motion } from 'framer-motion'
 
-import { ScreenshotProps } from '@html5-vision/shared/models'
-import { captureImageFromVideo } from '@html5-vision/shared/utils/canvas'
+import { ScreenshotProps } from '@html5-vision/core/models'
+import { captureImageFromVideo } from '@html5-vision/core/utils/canvas'
 
 import { MenuState, useMenuStore } from '~store/menu'
 import { CameraState, useCameraStore } from '~store/camera'
@@ -48,12 +48,8 @@ export type Html5VisionLayoutRef = {
   }
 }
 
-export const Html5VisionLayout = forwardRef<Html5VisionLayoutRef, Html5VisionLayoutProps>(function (
-  props,
-  ref,
-) {
-  const { loaderComponent, permissionDeniedComponent, cameraNotFoundComponent, useDefaultMenu } =
-    props
+export const Html5VisionLayout = forwardRef<Html5VisionLayoutRef, Html5VisionLayoutProps>(function (props, ref) {
+  const { loaderComponent, permissionDeniedComponent, cameraNotFoundComponent, useDefaultMenu } = props
 
   const [isGettingVideoFrames, setIsGettingVideoFrames] = useState(false)
 

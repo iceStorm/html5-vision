@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 
-import { log } from '@html5-vision/shared/utils/logger'
+import { log } from '@html5-vision/core/utils/logger'
 
 import { MenuState } from './menu.state'
 

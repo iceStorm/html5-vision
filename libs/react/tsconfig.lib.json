@@ -2,12 +2,19 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
-    "types": ["node", "vite/client", "vite-plugin-comlink/client"]
+    "types": ["node", "vite/client", "vite-plugin-comlink/client"],
+    "baseUrl": ".",
+    "paths": {
+      "~models/*": ["./src/lib/models/*"],
+      "~utils/*": ["./src/lib/utils/*"],
+      "~store/*": ["./src/lib/store/*"],
+      "~assets/*": ["./src/lib/assets/*"],
+      "~components/*": ["./src/lib/components/*"],
+      "@html5-vision/core/utils/*": ["../core/src/utils/*"],
+      "@html5-vision/core/models": ["../core/src/models/index.ts"]
+    }
   },
-  "files": [
-    "../../node_modules/@nx/react/typings/cssmodule.d.ts",
-    "../../node_modules/@nx/react/typings/image.d.ts"
-  ],
+  "files": ["../../node_modules/@nx/react/typings/cssmodule.d.ts", "../../node_modules/@nx/react/typings/image.d.ts"],
   "exclude": [
     "**/*.spec.ts",
     "**/*.test.ts",

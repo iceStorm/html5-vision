@@ -6,7 +6,7 @@ import { RiBarcodeLine } from 'react-icons/ri'
 import { useCameraStore } from '~store/camera'
 import { MenuItem } from '~store/menu'
 
-import { BarcodeFormat } from '@html5-vision/shared/models'
+import { BarcodeFormat } from '@html5-vision/core/models'
 
 import './MenuBarcodes.scss'
 

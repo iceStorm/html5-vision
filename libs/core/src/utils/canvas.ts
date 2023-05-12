@@ -1,4 +1,4 @@
-import { ScreenshotProps } from '@html5-vision/shared/models'
+import { ScreenshotProps } from '../models/Screenshot'
 
 function _captureImageFromVideoFactory() {
   const canvas = document.createElement('canvas')
