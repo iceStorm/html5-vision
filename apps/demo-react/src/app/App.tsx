@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import styles from './App.module.scss';
+import styles from './App.module.scss'
 
 export function App() {
   return (
@@ -9,7 +9,7 @@ export function App() {
         Welcome demo-react 👋
       </h1>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
