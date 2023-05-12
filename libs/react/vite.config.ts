@@ -1,14 +1,21 @@
 /// <reference types="vitest" />
+
+import { join } from 'path';
+
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import viteTsConfigPaths from 'vite-tsconfig-paths';
 import dts from 'vite-plugin-dts';
-import { join } from 'path';
+
+import wasm from 'vite-plugin-wasm';
+import { comlink } from 'vite-plugin-comlink';
 
 export default defineConfig({
   cacheDir: '../../node_modules/.vite/react',
 
   plugins: [
+    wasm(),
+    comlink(),
     dts({
       entryRoot: 'src',
       tsConfigFilePath: join(__dirname, 'tsconfig.lib.json'),
@@ -21,13 +28,16 @@ export default defineConfig({
   ],
 
   // Uncomment this if you are using workers.
-  // worker: {
-  //  plugins: [
-  //    viteTsConfigPaths({
-  //      root: '../../',
-  //    }),
-  //  ],
-  // },
+  worker: {
+    format: 'es',
+    plugins: [
+      wasm(),
+      comlink(),
+      viteTsConfigPaths({
+        root: '../../',
+      }),
+    ],
+  },
 
   // Configuration for building your library.
   // See: https://vitejs.dev/guide/build.html#library-mode
