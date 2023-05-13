@@ -15,8 +15,10 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@htm5-vision/core": ["libs/core/src/index.ts"],
-      "@html5-vision/react": ["libs/react/src/index.ts"]
+      "@html5-vision/core/models": ["libs/core/src/models/index.ts"],
+      "@html5-vision/core/utils/*": ["libs/core/src/utils/*"],
+      "@html5-vision/react": ["libs/react/src/index.ts"],
+      "@html5-vision/react/menus": ["libs/react/src/menus/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

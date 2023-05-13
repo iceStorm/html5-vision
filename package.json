@@ -47,6 +47,7 @@
     "nx": "16.1.4",
     "prettier": "^2.6.2",
     "react-icons": "^4.8.0",
+    "react-simple-toasts": "^3.6.0",
     "react-test-renderer": "18.2.0",
     "sass": "^1.55.0",
     "simple-zustand-devtools": "^1.1.0",

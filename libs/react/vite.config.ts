@@ -1,6 +1,7 @@
 /// <reference types="vitest" />
 
 import { join } from 'path'
+import { fileURLToPath } from 'url'
 
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
@@ -9,7 +10,6 @@ import dts from 'vite-plugin-dts'
 
 import wasm from 'vite-plugin-wasm'
 import { comlink } from 'vite-plugin-comlink'
-import { fileURLToPath } from 'url'
 
 export default defineConfig({
   cacheDir: '../../node_modules/.vite/react',
