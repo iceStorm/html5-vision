@@ -22,9 +22,14 @@ function App() {
   }, [])
 
   useEffect(() => {
-    scannerLayoutRef.current?.camera.startGettingVideoFrames((screenshot) => {
-      detectBarcodes(screenshot)
-    })
+    // scannerLayoutRef.current?.camera.startGettingVideoFrames((screenshot) => {
+    //   detectBarcodes(screenshot)
+    // })
+
+    setInterval(async () => {
+      const screenshot = scannerLayoutRef.current?.camera.captureScreenShot().toImageData()
+      screenshot && detectBarcodes(screenshot)
+    }, 1000)
   }, [])
 
   function addDefaultMenuItems() {
@@ -46,30 +51,22 @@ function App() {
   }
 
   async function detectBarcodes(screenshot: ImageData) {
-    console.log('detectBarcodes...')
+    console.log('detectBarcodes...', screenshot)
 
     try {
-      const symbols = await barcodeWorker.detectBarcodes(
-        Comlink.proxy((screenshot: ImageData) => {
-          return scanImageData(screenshot)
-        }),
-        screenshot,
-      )
+      const symbols = await barcodeWorker.detectZBar(screenshot)
 
-      const barcodes: string[] = []
+      console.log('symbols:', symbols)
 
-      if (symbols.length) {
-        for (const s of symbols) {
-          const barcode = await barcodeWorker.decodeBarcodeData(s.data)
-          barcodes.push(barcode)
-
-          log('[ZBar detected]', s.typeName, barcode)
+      if (symbols && symbols.length) {
+        const barcodes = symbols.map((s) => {
+          log('[ZBar detected]', s.typeName, s.decode())
           return (
             <p>
               [{s.typeName}] {}
             </p>
           )
-        }
+        })
 
         toast(<div style={{ display: 'flex', flexDirection: 'column' }}>{barcodes.join('')}</div>)
       }

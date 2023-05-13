@@ -1,7 +1,10 @@
 /// <reference types="vitest" />
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import viteTsConfigPaths from 'vite-tsconfig-paths';
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import viteTsConfigPaths from 'vite-tsconfig-paths'
+
+import { comlink } from 'vite-plugin-comlink'
+import wasm from 'vite-plugin-wasm'
 
 export default defineConfig({
   cacheDir: '../../node_modules/.vite/demo-react',
@@ -17,6 +20,8 @@ export default defineConfig({
   },
 
   plugins: [
+    comlink(),
+    wasm(),
     react(),
     viteTsConfigPaths({
       root: '../../',
@@ -24,13 +29,16 @@ export default defineConfig({
   ],
 
   // Uncomment this if you are using workers.
-  // worker: {
-  //  plugins: [
-  //    viteTsConfigPaths({
-  //      root: '../../',
-  //    }),
-  //  ],
-  // },
+  worker: {
+    format: 'es',
+    plugins: [
+      comlink(),
+      wasm(),
+      viteTsConfigPaths({
+        root: '../../',
+      }),
+    ],
+  },
 
   define: {
     'import.meta.vitest': undefined,
@@ -44,4 +52,4 @@ export default defineConfig({
     include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     includeSource: ['src/**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
   },
-});
+})

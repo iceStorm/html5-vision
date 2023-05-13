@@ -10,6 +10,7 @@
       "~store/*": ["./src/lib/store/*"],
       "~assets/*": ["./src/lib/assets/*"],
       "~components/*": ["./src/lib/components/*"],
+      "~workers/*": ["./src/web-workers/*"],
       "@html5-vision/core/utils/*": ["../core/src/utils/*"],
       "@html5-vision/core/models": ["../core/src/models/index.ts"]
     }

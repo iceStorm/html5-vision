@@ -3,6 +3,7 @@ import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useSta
 import { ConditionalPick } from 'type-fest'
 import { shallow } from 'zustand/shallow'
 import { AnimatePresence, motion } from 'framer-motion'
+// import * as Comlink from 'comlink'
 
 import { ScreenshotProps } from '@html5-vision/core/models'
 import { captureImageFromVideo } from '@html5-vision/core/utils/canvas'
@@ -17,6 +18,7 @@ import { AccessCameraLoader } from '~components/AccessCameraLoader'
 import { PermissionDenied } from '~components/PermissionDenied'
 
 import './styles/index.scss'
+// import { barcodeWorker, proxiedWorker } from '~workers/barcode-worker'
 
 export interface Html5VisionLayoutProps {
   /** Component to show when accessing camera. */
@@ -45,6 +47,8 @@ export type Html5VisionLayoutRef = {
     drawBarcode?: (points: { x: number; y: number }[]) => void
 
     selectedCamera: CameraState['selectedCamera']
+
+    // detectBarcodesInWorker<T>(callback: () => Promise<T>): Promise<T>
   }
 }
 
@@ -172,6 +176,9 @@ export const Html5VisionLayout = forwardRef<Html5VisionLayoutRef, Html5VisionLay
         drawBarcode(points) {
           // mainRef.current?.canvasRef.current.
         },
+        // detectBarcodesInWorker(callback) {
+        //   return barcodeWorker.runJobInWorker(Comlink.proxy(callback)) as any
+        // },
       },
     }),
     [
