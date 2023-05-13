@@ -1,4 +1,4 @@
-import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react'
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react'
 
 import { ConditionalPick } from 'type-fest'
 import { shallow } from 'zustand/shallow'
@@ -18,6 +18,7 @@ import { AccessCameraLoader } from '~components/AccessCameraLoader'
 import { PermissionDenied } from '~components/PermissionDenied'
 
 import './styles/index.scss'
+import { throttle } from 'lodash'
 // import { barcodeWorker, proxiedWorker } from '~workers/barcode-worker'
 
 export interface Html5VisionLayoutProps {
@@ -41,7 +42,7 @@ export type Html5VisionLayoutRef = {
       toBase64(): string | undefined
     }
 
-    startGettingVideoFrames(onFrame: (data: ImageData) => void): void
+    startGettingVideoFrames(throttleMilliseconds: number, onFrame: (data: ImageData) => void): void
     stopGettingVideoFrames(): void
 
     drawBarcode?: (points: { x: number; y: number }[]) => void
@@ -54,7 +55,18 @@ export const Html5VisionLayout = forwardRef<Html5VisionLayoutRef, Html5VisionLay
   const { loaderComponent, permissionDeniedComponent, cameraNotFoundComponent, useDefaultMenu } = props
 
   const [isGettingVideoFrames, setIsGettingVideoFrames] = useState(false)
-  const [videoFrameCallback, setVideoFrameCallback] = useState<(...args: any[]) => void>()
+  const [videoFrameCallback, setVideoFrameCallback] = useState<(...args: any[]) => void>(() => {
+    return () => console.log('Start getting video frames...')
+  })
+  const [videoFrameDelay, setVideoFrameDelay] = useState(1000)
+
+  // const [videoFramesInterval, setVideoFramesInterval] = useState<NodeJS.Timer>()
+  const videoFramesIntervalRef = useRef<NodeJS.Timer>()
+
+  const onFrameCallback = useCallback(
+    throttle(() => videoFrameCallback, videoFrameDelay),
+    [videoFrameCallback, videoFrameDelay],
+  )
 
   const [
     selectedCamera,
@@ -102,24 +114,17 @@ export const Html5VisionLayout = forwardRef<Html5VisionLayoutRef, Html5VisionLay
     shallow,
   )
 
-  const getVideoFrame = useCallback(
-    (callback: (data: ImageData) => void, runnable?: boolean) => {
-      if (selectedCamera?.stream && (runnable || isGettingVideoFrames)) {
-        if (mainRef.current?.videoRef.current) {
-          const image = captureImageFromVideo(mainRef.current?.videoRef.current).toImageData()
+  const getVideoFrame = useCallback(() => {
+    if (selectedCamera?.stream && isGettingVideoFrames) {
+      if (mainRef.current?.videoRef.current) {
+        const image = captureImageFromVideo(mainRef.current?.videoRef.current).toImageData()
 
-          if (image) {
-            callback(image)
-          }
+        if (image) {
+          onFrameCallback()?.(image)
         }
-
-        frameIdRef.current = requestAnimationFrame(() => {
-          getVideoFrame(callback, isGettingVideoFrames)
-        })
       }
-    },
-    [isGettingVideoFrames, selectedCamera?.stream],
-  )
+    }
+  }, [isGettingVideoFrames, onFrameCallback, selectedCamera?.stream])
 
   // handle ref impelmentations here
   useImperativeHandle(
@@ -157,17 +162,13 @@ export const Html5VisionLayout = forwardRef<Html5VisionLayoutRef, Html5VisionLay
             },
           }
         },
-        startGettingVideoFrames(callback) {
+        startGettingVideoFrames(delay, callback) {
+          setVideoFrameDelay(delay)
           setVideoFrameCallback(() => callback)
           setIsGettingVideoFrames(true)
         },
         stopGettingVideoFrames() {
-          if (frameIdRef.current) {
-            cancelAnimationFrame(frameIdRef.current)
-          }
-
-          frameIdRef.current = undefined
-          setIsGettingVideoFrames(false)
+          clearInterval(videoFramesIntervalRef.current)
         },
         drawBarcode(points) {
           // mainRef.current?.canvasRef.current.
@@ -176,6 +177,7 @@ export const Html5VisionLayout = forwardRef<Html5VisionLayoutRef, Html5VisionLay
     }),
     [
       addMenuItem,
+      // getVideoFrame,
       hideActiveMenuPanel,
       isAccessingCamera,
       isCameraCouldNotStart,
@@ -199,7 +201,6 @@ export const Html5VisionLayout = forwardRef<Html5VisionLayoutRef, Html5VisionLay
 
   const layoutRef = useRef<HTMLDivElement>(null)
   const mainRef = useRef<MainRef>(null)
-  const frameIdRef = useRef<number>()
 
   useEffect(() => {
     requestCamera()
@@ -213,17 +214,17 @@ export const Html5VisionLayout = forwardRef<Html5VisionLayoutRef, Html5VisionLay
   }, [])
 
   useEffect(() => {
-    if (isGettingVideoFrames && videoFrameCallback) {
-      getVideoFrame(videoFrameCallback, true)
+    if (isGettingVideoFrames) {
+      videoFramesIntervalRef.current = setInterval(() => {
+        getVideoFrame()
+      }, videoFrameDelay)
     }
 
     if (!selectedCamera?.stream) {
-      if (frameIdRef.current) {
-        cancelAnimationFrame(frameIdRef.current)
-        frameIdRef.current = undefined
-      }
+      clearInterval(videoFramesIntervalRef.current)
+      onFrameCallback.cancel()
     }
-  }, [videoFrameCallback, isGettingVideoFrames, getVideoFrame, selectedCamera?.stream])
+  }, [videoFrameCallback, isGettingVideoFrames, getVideoFrame, selectedCamera?.stream, onFrameCallback, videoFrameDelay])
 
   return (
     <div className="hv" ref={layoutRef}>

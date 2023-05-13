@@ -5,6 +5,8 @@ import { useMenuStore } from '~store/menu'
 export function MenuPanels() {
   const [menuPosition, menuItems] = useMenuStore((state) => [state.position, state.items])
 
+  console.log('MenuPanels renders...')
+
   return (
     <section className={clsx('hv-menu-panels', menuPosition)}>
       {menuItems.map((i) => {

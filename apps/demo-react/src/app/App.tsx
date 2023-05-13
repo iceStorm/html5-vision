@@ -19,16 +19,14 @@ function App() {
 
   useEffect(() => {
     addDefaultMenuItems()
+
+    scannerLayoutRef.current?.camera.startGettingVideoFrames(1000, (screenshot) => {
+      detectBarcodes(screenshot)
+    })
   }, [])
 
   useEffect(() => {
-    scannerLayoutRef.current?.camera.startGettingVideoFrames((screenshot) => {
-      detectBarcodes(screenshot)
-    })
-
-    // setTimeout(() => {
-    //   scannerLayoutRef.current?.camera.stopGettingVideoFrames()
-    // }, 3000)
+    //
   }, [])
 
   useEffect(() => {
