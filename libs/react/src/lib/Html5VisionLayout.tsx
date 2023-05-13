@@ -47,8 +47,6 @@ export type Html5VisionLayoutRef = {
     drawBarcode?: (points: { x: number; y: number }[]) => void
 
     selectedCamera: CameraState['selectedCamera']
-
-    // detectBarcodesInWorker<T>(callback: () => Promise<T>): Promise<T>
   }
 }
 
@@ -56,6 +54,7 @@ export const Html5VisionLayout = forwardRef<Html5VisionLayoutRef, Html5VisionLay
   const { loaderComponent, permissionDeniedComponent, cameraNotFoundComponent, useDefaultMenu } = props
 
   const [isGettingVideoFrames, setIsGettingVideoFrames] = useState(false)
+  const [videoFrameCallback, setVideoFrameCallback] = useState<(...args: any[]) => void>()
 
   const [
     selectedCamera,
@@ -103,26 +102,24 @@ export const Html5VisionLayout = forwardRef<Html5VisionLayoutRef, Html5VisionLay
     shallow,
   )
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const getVideoFrame = (callback: (data: ImageData) => void, runnable?: boolean) => {
-    if (runnable || isGettingVideoFrames) {
-      console.log('getVideoFrame')
+  const getVideoFrame = useCallback(
+    (callback: (data: ImageData) => void, runnable?: boolean) => {
+      if (selectedCamera?.stream && (runnable || isGettingVideoFrames)) {
+        if (mainRef.current?.videoRef.current) {
+          const image = captureImageFromVideo(mainRef.current?.videoRef.current).toImageData()
 
-      if (mainRef.current?.videoRef.current) {
-        const image = captureImageFromVideo(mainRef.current?.videoRef.current).toImageData()
-
-        console.log('getVideoFrame image', image)
-
-        if (image) {
-          callback(image)
+          if (image) {
+            callback(image)
+          }
         }
-      }
 
-      requestAnimationFrame(() => {
-        getVideoFrame(callback)
-      })
-    }
-  }
+        frameIdRef.current = requestAnimationFrame(() => {
+          getVideoFrame(callback, isGettingVideoFrames)
+        })
+      }
+    },
+    [isGettingVideoFrames, selectedCamera?.stream],
+  )
 
   // handle ref impelmentations here
   useImperativeHandle(
@@ -161,29 +158,24 @@ export const Html5VisionLayout = forwardRef<Html5VisionLayoutRef, Html5VisionLay
           }
         },
         startGettingVideoFrames(callback) {
-          console.log('startGettingVideoFrames')
-
+          setVideoFrameCallback(() => callback)
           setIsGettingVideoFrames(true)
-          getVideoFrame(callback, true)
         },
         stopGettingVideoFrames() {
           if (frameIdRef.current) {
             cancelAnimationFrame(frameIdRef.current)
           }
 
+          frameIdRef.current = undefined
           setIsGettingVideoFrames(false)
         },
         drawBarcode(points) {
           // mainRef.current?.canvasRef.current.
         },
-        // detectBarcodesInWorker(callback) {
-        //   return barcodeWorker.runJobInWorker(Comlink.proxy(callback)) as any
-        // },
       },
     }),
     [
       addMenuItem,
-      getVideoFrame,
       hideActiveMenuPanel,
       isAccessingCamera,
       isCameraCouldNotStart,
@@ -219,6 +211,19 @@ export const Html5VisionLayout = forwardRef<Html5VisionLayoutRef, Html5VisionLay
       // })
     }
   }, [])
+
+  useEffect(() => {
+    if (isGettingVideoFrames && videoFrameCallback) {
+      getVideoFrame(videoFrameCallback, true)
+    }
+
+    if (!selectedCamera?.stream) {
+      if (frameIdRef.current) {
+        cancelAnimationFrame(frameIdRef.current)
+        frameIdRef.current = undefined
+      }
+    }
+  }, [videoFrameCallback, isGettingVideoFrames, getVideoFrame, selectedCamera?.stream])
 
   return (
     <div className="hv" ref={layoutRef}>

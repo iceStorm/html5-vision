@@ -22,15 +22,18 @@ function App() {
   }, [])
 
   useEffect(() => {
-    // scannerLayoutRef.current?.camera.startGettingVideoFrames((screenshot) => {
-    //   detectBarcodes(screenshot)
-    // })
+    scannerLayoutRef.current?.camera.startGettingVideoFrames((screenshot) => {
+      detectBarcodes(screenshot)
+    })
 
-    setInterval(async () => {
-      const screenshot = scannerLayoutRef.current?.camera.captureScreenShot().toImageData()
-      screenshot && detectBarcodes(screenshot)
-    }, 1000)
+    // setTimeout(() => {
+    //   scannerLayoutRef.current?.camera.stopGettingVideoFrames()
+    // }, 3000)
   }, [])
+
+  useEffect(() => {
+    console.warn('camera:', scannerLayoutRef.current?.camera.selectedCamera)
+  }, [scannerLayoutRef.current?.camera.selectedCamera])
 
   function addDefaultMenuItems() {
     scannerLayoutRef.current?.menu.addMenuItem(MenuCamera)

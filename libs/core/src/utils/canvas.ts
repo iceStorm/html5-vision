@@ -12,6 +12,10 @@ function _captureImageFromVideoFactory() {
         context = canvas.getContext('2d', { willReadFrequently: true })
       }
 
+      if (videoElement.videoWidth === 0 || videoElement.videoHeight === 0) {
+        return
+      }
+
       canvas.width = videoElement.videoWidth
       canvas.height = videoElement.videoHeight
 
