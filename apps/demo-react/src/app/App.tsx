@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 
 import toast from 'react-simple-toasts'
-import { scanImageData } from '@undecaf/zbar-wasm'
+import { ZBarSymbol, scanImageData } from '@undecaf/zbar-wasm'
 
 import { IoMusicalNote } from 'react-icons/io5'
 

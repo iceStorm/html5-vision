@@ -1,12 +1,36 @@
 {
   "name": "@html5-vision/react",
-  "version": "0.0.1",
-  "main": "./index.js",
-  "types": "./index.d.ts",
+  "version": "0.2.5",
+  "main": "./hv-index.js",
+  "files": [
+    "**/*"
+  ],
   "exports": {
     ".": {
-      "import": "./index.mjs",
-      "require": "./index.js"
+      "import": "./hv-index.mjs",
+      "require": "./hv-index.js",
+      "types": "./hv-index.d.ts"
+    },
+    "./menus": {
+      "import": "./hv-menus.mjs",
+      "require": "./hv-menus.js",
+      "types": "./hv-menus.d.ts"
+    },
+    "./index.css": {
+      "import": "./index.css",
+      "require": "./index.css"
+    },
+    "./menus.css": {
+      "import": "./index2.css",
+      "require": "./index2.css"
     }
-  }
+  },
+  "peerDependencies": {
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "zustand": "^4.3.8",
+    "framer-motion": "^10.12.8",
+    "lodash": "^4.17.21"
+  },
+  "dependencies": {}
 }
