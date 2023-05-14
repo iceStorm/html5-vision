@@ -41,7 +41,7 @@ export type Html5VisionLayoutRef = {
       toBase64(): string | undefined
     }
 
-    startGettingVideoFrames(throttleMilliseconds: number, onFrame: (data: ImageData) => void): void
+    startGettingVideoFrames(onFrame: (data: ImageData) => Promise<unknown>): void
     stopGettingVideoFrames(): void
 
     drawBarcode?: (points: { x: number; y: number }[]) => void
@@ -52,8 +52,11 @@ export const Html5VisionLayout = forwardRef<Html5VisionLayoutRef, Html5VisionLay
   const { loaderComponent, permissionDeniedComponent, cameraNotFoundComponent, useDefaultMenu } = props
 
   const [isGettingVideoFrames, setIsGettingVideoFrames] = useState(false)
-  const [videoFrameCallback, setVideoFrameCallback] = useState<(...args: any[]) => void>(() => {
-    return () => console.log('Start getting video frames...')
+  const [videoFrameCallback, setVideoFrameCallback] = useState<(...args: any[]) => Promise<unknown>>(() => {
+    return () =>
+      Promise.resolve(() => {
+        console.log('Start getting video frames...')
+      })
   })
   const [videoFrameDelay, setVideoFrameDelay] = useState(1000)
 
@@ -133,8 +136,8 @@ export const Html5VisionLayout = forwardRef<Html5VisionLayoutRef, Html5VisionLay
             },
           }
         },
-        startGettingVideoFrames(delay, callback) {
-          setVideoFrameDelay(delay)
+        startGettingVideoFrames(callback) {
+          // setVideoFrameDelay(delay)
           setVideoFrameCallback(() => callback)
           setIsGettingVideoFrames(true)
         },
@@ -188,29 +191,34 @@ export const Html5VisionLayout = forwardRef<Html5VisionLayoutRef, Html5VisionLay
     }
   }, [])
 
+  const getVideoFrame = useCallback(() => {
+    console.log('getVideoFrame:', mainRef.current?.videoRef.current)
+
+    if (mainRef.current?.videoRef.current) {
+      const image = captureImageFromVideo(mainRef.current?.videoRef.current).toImageData()
+      console.log('image:', image)
+
+      if (image) {
+        videoFrameCallback(image).then(() => {
+          setTimeout(() => {
+            getVideoFrame()
+          }, 1000)
+        })
+      } else {
+        setTimeout(() => {
+          getVideoFrame()
+        }, 1000)
+      }
+    }
+  }, [videoFrameCallback])
+
   useEffect(() => {
+    console.log('isGettingVideoFrames:', isGettingVideoFrames)
+
     if (isGettingVideoFrames) {
-      videoFramesIntervalRef.current = setInterval(() => {
-        if (selectedCamera?.stream && isGettingVideoFrames) {
-          if (mainRef.current?.videoRef.current) {
-            const image = captureImageFromVideo(mainRef.current?.videoRef.current).toImageData()
-
-            if (image) {
-              videoFrameCallback(image)
-            }
-          }
-        }
-      }, videoFrameDelay)
+      getVideoFrame()
     }
-
-    if (!selectedCamera?.stream) {
-      clearInterval(videoFramesIntervalRef.current)
-    }
-
-    return () => {
-      clearInterval(videoFramesIntervalRef.current)
-    }
-  }, [videoFrameCallback, isGettingVideoFrames, selectedCamera?.stream, videoFrameDelay])
+  }, [videoFrameCallback, isGettingVideoFrames, selectedCamera?.stream, videoFrameDelay, getVideoFrame])
 
   return (
     <div className="hv" ref={layoutRef}>

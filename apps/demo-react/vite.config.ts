@@ -20,8 +20,8 @@ export default defineConfig({
   },
 
   plugins: [
-    comlink(),
     wasm(),
+    comlink(),
     react(),
     viteTsConfigPaths({
       root: '../../',
@@ -32,8 +32,8 @@ export default defineConfig({
   worker: {
     format: 'es',
     plugins: [
-      comlink(),
       wasm(),
+      comlink(),
       viteTsConfigPaths({
         root: '../../',
       }),
