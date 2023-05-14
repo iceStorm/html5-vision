@@ -109,17 +109,17 @@ export const Html5VisionLayout = forwardRef<Html5VisionLayoutRef, Html5VisionLay
     shallow,
   )
 
-  const getVideoFrame = useCallback(() => {
-    if (selectedCamera?.stream && isGettingVideoFrames) {
-      if (mainRef.current?.videoRef.current) {
-        const image = captureImageFromVideo(mainRef.current?.videoRef.current).toImageData()
+  // const getVideoFrame = useCallback(() => {
+  //   if (selectedCamera?.stream && isGettingVideoFrames) {
+  //     if (mainRef.current?.videoRef.current) {
+  //       const image = captureImageFromVideo(mainRef.current?.videoRef.current).toImageData()
 
-        if (image) {
-          videoFrameCallback(image)
-        }
-      }
-    }
-  }, [isGettingVideoFrames, selectedCamera?.stream, videoFrameCallback])
+  //       if (image) {
+  //         videoFrameCallback(image)
+  //       }
+  //     }
+  //   }
+  // }, [isGettingVideoFrames, selectedCamera?.stream, videoFrameCallback])
 
   // handle ref impelmentations here
   useImperativeHandle(
@@ -224,14 +224,26 @@ export const Html5VisionLayout = forwardRef<Html5VisionLayoutRef, Html5VisionLay
   useEffect(() => {
     if (isGettingVideoFrames) {
       videoFramesIntervalRef.current = setInterval(() => {
-        getVideoFrame()
+        if (selectedCamera?.stream && isGettingVideoFrames) {
+          if (mainRef.current?.videoRef.current) {
+            const image = captureImageFromVideo(mainRef.current?.videoRef.current).toImageData()
+
+            if (image) {
+              videoFrameCallback(image)
+            }
+          }
+        }
       }, videoFrameDelay)
     }
 
     if (!selectedCamera?.stream) {
       clearInterval(videoFramesIntervalRef.current)
     }
-  }, [videoFrameCallback, isGettingVideoFrames, getVideoFrame, selectedCamera?.stream, videoFrameDelay])
+
+    return () => {
+      clearInterval(videoFramesIntervalRef.current)
+    }
+  }, [videoFrameCallback, isGettingVideoFrames, selectedCamera?.stream, videoFrameDelay])
 
   return (
     <div className="hv" ref={layoutRef}>

@@ -8,7 +8,6 @@ import { IoMusicalNote } from 'react-icons/io5'
 import { Html5VisionLayout, Html5VisionLayoutRef } from '@html5-vision/react'
 import { MenuCamera, MenuMasks } from '@html5-vision/react/menus'
 import { log } from '@html5-vision/core/utils/logger'
-import * as Comlink from 'comlink'
 
 import styles from './App.module.scss'
 import { barcodeWorker } from './workers'
@@ -23,6 +22,10 @@ function App() {
     scannerLayoutRef.current?.camera.startGettingVideoFrames(1000, (screenshot) => {
       detectBarcodes(screenshot)
     })
+
+    return () => {
+      scannerLayoutRef.current?.camera.stopGettingVideoFrames()
+    }
   }, [])
 
   useEffect(() => {
@@ -55,8 +58,8 @@ function App() {
     console.log('detectBarcodes...', screenshot)
 
     try {
-      const symbols = await barcodeWorker.detectZBar(screenshot)
-      // const symbols = await scanImageData(screenshot)
+      // const symbols = await barcodeWorker.detectZBar(screenshot)
+      const symbols = await scanImageData(screenshot)
 
       if (symbols && symbols.length) {
         const barcodes = symbols.map((s) => {
