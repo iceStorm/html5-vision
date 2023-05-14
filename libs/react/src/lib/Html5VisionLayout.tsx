@@ -41,7 +41,7 @@ export type Html5VisionLayoutRef = {
       toBase64(): string | undefined
     }
 
-    startGettingVideoFrames(onFrame: (data: ImageData) => Promise<unknown>): void
+    startGettingVideoFrames(delay: number, onFrame: (data: ImageData) => Promise<unknown>): void
     stopGettingVideoFrames(): void
 
     drawBarcode?: (points: { x: number; y: number }[]) => void
@@ -136,8 +136,8 @@ export const Html5VisionLayout = forwardRef<Html5VisionLayoutRef, Html5VisionLay
             },
           }
         },
-        startGettingVideoFrames(callback) {
-          // setVideoFrameDelay(delay)
+        startGettingVideoFrames(delay, callback) {
+          setVideoFrameDelay(delay)
           setVideoFrameCallback(() => callback)
           setIsGettingVideoFrames(true)
         },
@@ -202,15 +202,15 @@ export const Html5VisionLayout = forwardRef<Html5VisionLayoutRef, Html5VisionLay
         videoFrameCallback(image).then(() => {
           setTimeout(() => {
             getVideoFrame()
-          }, 1000)
+          }, videoFrameDelay)
         })
       } else {
         setTimeout(() => {
           getVideoFrame()
-        }, 1000)
+        }, videoFrameDelay)
       }
     }
-  }, [videoFrameCallback])
+  }, [videoFrameCallback, videoFrameDelay])
 
   useEffect(() => {
     console.log('isGettingVideoFrames:', isGettingVideoFrames)

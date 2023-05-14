@@ -11,6 +11,7 @@ import { log } from '@html5-vision/core/utils/logger'
 
 import styles from './App.module.scss'
 import { barcodeWorker } from './workers/barcode-worker'
+import { pureWorker } from './workers/pure-worker'
 
 function App() {
   const scannerLayoutRef = useRef<Html5VisionLayoutRef>(null)
@@ -19,7 +20,7 @@ function App() {
   useEffect(() => {
     addDefaultMenuItems()
 
-    scannerLayoutRef.current?.camera.startGettingVideoFrames((screenshot) => {
+    scannerLayoutRef.current?.camera.startGettingVideoFrames(2000, (screenshot) => {
       return detectBarcodes(screenshot)
     })
 
@@ -59,36 +60,38 @@ function App() {
       // barcodeWorker
       //   .detectZBar(screenshot)
       //   .then((symbols) => {
-      //     alert('worker run succeeded:' + symbols.length)
+      //     console.warn('worker run succeeded:' + symbols.length)
       //   })
       //   .catch((err) => {
-      //     alert('worker error:' + err.message)
+      //     console.warn('worker error:' + err.message)
       //   })
       //   .finally(() => {
-      //     alert('worker run finished')
+      //     console.warn('worker run finished')
       //   })
 
-      const symbols = await barcodeWorker.detectZBar(screenshot)
-      console.log('done zbar off worker', symbols)
+      // const symbols = await barcodeWorker.detectZBar(screenshot)
+      pureWorker.postMessage(screenshot)
 
-      if (symbols.length) {
-        const barcodes = new Array<string>()
+      pureWorker.addEventListener('message', (e: MessageEvent<ZBarSymbol>) => {
+        console.log('on decoded:', e.data)
 
-        for (const s of symbols) {
-          // barcodes.push(s.decode())
-
-          const barcode = await barcodeWorker.decodeZbarData(s.data)
-          barcodes.push(barcode)
-        }
-
-        toast(
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            {barcodes.map((b) => (
-              <p>{b}</p>
-            ))}
-          </div>,
-        )
-      }
+        // console.log('done zbar off worker', symbols)
+        // if (symbols.length) {
+        //   const barcodes = new Array<string>()
+        //   for (const s of symbols) {
+        //     // barcodes.push(s.decode())
+        //     const barcode = await barcodeWorker.decodeZbarData(s.data)
+        //     barcodes.push(barcode)
+        //   }
+        //   toast(
+        //     <div style={{ display: 'flex', flexDirection: 'column' }}>
+        //       {barcodes.map((b) => (
+        //         <p>{b}</p>
+        //       ))}
+        //     </div>,
+        //   )
+        // }
+      })
     } catch (error) {
       console.log(error)
 
