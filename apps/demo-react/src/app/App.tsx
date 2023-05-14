@@ -1,17 +1,17 @@
 import { useEffect, useRef, useState } from 'react'
 
-import toast from 'react-simple-toasts'
 import { ZBarSymbol, scanImageData } from '@undecaf/zbar-wasm'
 
 import { IoMusicalNote } from 'react-icons/io5'
 
 import { Html5VisionLayout, Html5VisionLayoutRef } from '@html5-vision/react'
 import { MenuCamera, MenuMasks } from '@html5-vision/react/menus'
-import { log } from '@html5-vision/core/utils/logger'
+
+import toast from 'react-simple-toasts'
+
+import { pureWorker } from './workers/pure-worker'
 
 import styles from './App.module.scss'
-import { barcodeWorker } from './workers/barcode-worker'
-import { pureWorker } from './workers/pure-worker'
 
 function App() {
   const scannerLayoutRef = useRef<Html5VisionLayoutRef>(null)
@@ -55,7 +55,23 @@ function App() {
     console.log('detectBarcodes...', screenshot.width, screenshot.height)
 
     try {
-      // const symbols = await scanImageData(screenshot)
+      const symbols = await scanImageData(screenshot)
+      console.log('done zbar off worker', symbols)
+
+      if (symbols.length) {
+        const barcodes = new Array<string>()
+        for (const s of symbols) {
+          barcodes.push(s.decode())
+        }
+
+        toast(
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            {barcodes.map((b) => (
+              <p>{b}</p>
+            ))}
+          </div>,
+        )
+      }
 
       // barcodeWorker
       //   .detectZBar(screenshot)
@@ -68,30 +84,11 @@ function App() {
       //   .finally(() => {
       //     console.warn('worker run finished')
       //   })
-
       // const symbols = await barcodeWorker.detectZBar(screenshot)
-      pureWorker.postMessage(screenshot)
-
-      pureWorker.addEventListener('message', (e: MessageEvent<ZBarSymbol>) => {
-        console.log('on decoded:', e.data)
-
-        // console.log('done zbar off worker', symbols)
-        // if (symbols.length) {
-        //   const barcodes = new Array<string>()
-        //   for (const s of symbols) {
-        //     // barcodes.push(s.decode())
-        //     const barcode = await barcodeWorker.decodeZbarData(s.data)
-        //     barcodes.push(barcode)
-        //   }
-        //   toast(
-        //     <div style={{ display: 'flex', flexDirection: 'column' }}>
-        //       {barcodes.map((b) => (
-        //         <p>{b}</p>
-        //       ))}
-        //     </div>,
-        //   )
-        // }
-      })
+      // pureWorker.postMessage(screenshot)
+      // pureWorker.addEventListener('message', (e: MessageEvent<ZBarSymbol>) => {
+      //   console.log('on decoded:', e.data)
+      // })
     } catch (error) {
       console.log(error)
 

@@ -1,6 +1,6 @@
 {
   "name": "@html5-vision/react",
-  "version": "0.2.6",
+  "version": "0.2.8",
   "main": "./hv-index.js",
   "files": [
     "**/*"
@@ -30,7 +30,8 @@
     "react-dom": "18.2.0",
     "zustand": "^4.3.8",
     "framer-motion": "^10.12.8",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "type-fest": "^3.10.0"
   },
   "dependencies": {},
   "repository": "https://github.com/iceStorm/html5-vision",

@@ -1,15 +1,14 @@
-import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react'
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react'
 
 import { ConditionalPick } from 'type-fest'
 import { shallow } from 'zustand/shallow'
 import { AnimatePresence, motion } from 'framer-motion'
-// import * as Comlink from 'comlink'
 
 import { ScreenshotProps } from '@html5-vision/core/models'
 import { captureImageFromVideo } from '@html5-vision/core/utils/canvas'
 
 import { MenuState, useMenuStore } from '~store/menu'
-import { CameraState, useCameraStore } from '~store/camera'
+import { useCameraStore } from '~store/camera'
 
 import { Menu } from '~components/Menu'
 import { Main, MainRef } from '~components/Main'
@@ -18,7 +17,6 @@ import { AccessCameraLoader } from '~components/AccessCameraLoader'
 import { PermissionDenied } from '~components/PermissionDenied'
 
 import './styles/index.scss'
-// import { barcodeWorker, proxiedWorker } from '~workers/barcode-worker'
 
 export interface Html5VisionLayoutProps {
   /** Component to show when accessing camera. */
@@ -84,30 +82,18 @@ export const Html5VisionLayout = forwardRef<Html5VisionLayoutRef, Html5VisionLay
     shallow,
   )
 
-  const [
-    addMenuItem,
-    removeMenuItemAt,
-    toggleMenuVisibility,
-    setPosition,
-    setActiveItem,
-    hideActiveMenuPanel,
-    isMenuVisible,
-    menuItems,
-    menuPosition,
-  ] = useMenuStore(
-    (state) => [
-      state.addMenuItem,
-      state.removeMenuItemAt,
-      state.toggleMenuVisibility,
-      state.setPosition,
-      state.setActiveItem,
-      state.hideActiveMenuPanel,
-      state.isVisible,
-      state.items,
-      state.position,
-    ],
-    shallow,
-  )
+  const [addMenuItem, removeMenuItemAt, toggleMenuVisibility, setPosition, setActiveItem, hideActiveMenuPanel] =
+    useMenuStore(
+      (state) => [
+        state.addMenuItem,
+        state.removeMenuItemAt,
+        state.toggleMenuVisibility,
+        state.setPosition,
+        state.setActiveItem,
+        state.hideActiveMenuPanel,
+      ],
+      shallow,
+    )
 
   // handle ref impelmentations here
   useImperativeHandle(
