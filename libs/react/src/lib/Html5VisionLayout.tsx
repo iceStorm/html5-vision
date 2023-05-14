@@ -171,7 +171,20 @@ export const Html5VisionLayout = forwardRef<Html5VisionLayoutRef, Html5VisionLay
           clearInterval(videoFramesIntervalRef.current)
         },
         drawBarcode(points) {
-          // mainRef.current?.canvasRef.current.
+          console.log('points:', points)
+
+          const canvas = mainRef.current?.canvasRef.current
+          const ctx = mainRef.current?.canvasRef.current?.getContext('2d')
+          const lastPoint = points[points.length - 1]
+
+          if (ctx) {
+            ctx.moveTo(lastPoint.x, lastPoint.y)
+            points.forEach((point) => ctx.lineTo(point.x, point.y))
+
+            ctx.lineWidth = Math.max(Math.min(canvas?.height || 0, canvas?.width || 0) / 100, 1)
+            ctx.strokeStyle = '#00e00060'
+            ctx.stroke()
+          }
         },
       },
     }),

@@ -56,15 +56,17 @@ function App() {
 
     try {
       const symbols = await barcodeWorker.detectZBar(screenshot)
-
-      console.log('symbols:', symbols)
+      // const symbols = await scanImageData(screenshot)
 
       if (symbols && symbols.length) {
         const barcodes = symbols.map((s) => {
           log('[ZBar detected]', s.typeName, s.decode())
+
+          scannerLayoutRef.current?.camera.drawBarcode?.(s.points)
+
           return (
             <p>
-              [{s.typeName}] {}
+              [{s.typeName}] {s.decode()}
             </p>
           )
         })

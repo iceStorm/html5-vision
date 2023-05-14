@@ -33,7 +33,7 @@ export function Menu() {
         {/* control buttons */}
         <MenuControls ref={buttonsRef} />
 
-        {/* menu items */}
+        {/* menu buttons */}
         <section
           ref={menuRef}
           className={clsx('hv-menu-buttons')}

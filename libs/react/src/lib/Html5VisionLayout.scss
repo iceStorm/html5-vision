@@ -109,15 +109,6 @@
 
       transition: all 0.25s ease-in-out;
 
-      &.hidden {
-        // transform: translateY(-200px);
-        // opacity: 0;
-      }
-      &.visible {
-        // transform: translateY(0);
-        // opacity: 1;
-      }
-
       &-btn {
         border: none;
         background: var(--hv-element-bg-color);
