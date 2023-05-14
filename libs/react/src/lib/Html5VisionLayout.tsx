@@ -63,11 +63,6 @@ export const Html5VisionLayout = forwardRef<Html5VisionLayoutRef, Html5VisionLay
   // const [videoFramesInterval, setVideoFramesInterval] = useState<NodeJS.Timer>()
   const videoFramesIntervalRef = useRef<NodeJS.Timer>()
 
-  const onFrameCallback = useCallback(
-    throttle(() => videoFrameCallback, videoFrameDelay),
-    [videoFrameCallback, videoFrameDelay],
-  )
-
   const [
     selectedCamera,
     isAccessingCamera,
@@ -120,11 +115,11 @@ export const Html5VisionLayout = forwardRef<Html5VisionLayoutRef, Html5VisionLay
         const image = captureImageFromVideo(mainRef.current?.videoRef.current).toImageData()
 
         if (image) {
-          onFrameCallback()?.(image)
+          videoFrameCallback(image)
         }
       }
     }
-  }, [isGettingVideoFrames, onFrameCallback, selectedCamera?.stream])
+  }, [isGettingVideoFrames, selectedCamera?.stream, videoFrameCallback])
 
   // handle ref impelmentations here
   useImperativeHandle(
@@ -235,9 +230,8 @@ export const Html5VisionLayout = forwardRef<Html5VisionLayoutRef, Html5VisionLay
 
     if (!selectedCamera?.stream) {
       clearInterval(videoFramesIntervalRef.current)
-      onFrameCallback.cancel()
     }
-  }, [videoFrameCallback, isGettingVideoFrames, getVideoFrame, selectedCamera?.stream, onFrameCallback, videoFrameDelay])
+  }, [videoFrameCallback, isGettingVideoFrames, getVideoFrame, selectedCamera?.stream, videoFrameDelay])
 
   return (
     <div className="hv" ref={layoutRef}>
