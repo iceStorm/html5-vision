@@ -32,10 +32,6 @@ function App() {
     //
   }, [])
 
-  useEffect(() => {
-    console.warn('camera:', scannerLayoutRef.current?.camera.selectedCamera)
-  }, [scannerLayoutRef.current?.camera.selectedCamera])
-
   function addDefaultMenuItems() {
     scannerLayoutRef.current?.menu.addMenuItem(MenuCamera)
     scannerLayoutRef.current?.menu.addMenuItem(MenuMasks)

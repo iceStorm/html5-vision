@@ -18,7 +18,6 @@ import { AccessCameraLoader } from '~components/AccessCameraLoader'
 import { PermissionDenied } from '~components/PermissionDenied'
 
 import './styles/index.scss'
-import { throttle } from 'lodash'
 // import { barcodeWorker, proxiedWorker } from '~workers/barcode-worker'
 
 export interface Html5VisionLayoutProps {
@@ -35,8 +34,8 @@ export interface Html5VisionLayoutProps {
 }
 
 export type Html5VisionLayoutRef = {
-  menu: MenuState
-  camera: ConditionalPick<CameraState, boolean> & {
+  menu: ConditionalPick<MenuState, () => void>
+  camera: {
     captureScreenShot(specs?: ScreenshotProps): {
       toImageData(): ImageData | undefined
       toBase64(): string | undefined
@@ -46,8 +45,6 @@ export type Html5VisionLayoutRef = {
     stopGettingVideoFrames(): void
 
     drawBarcode?: (points: { x: number; y: number }[]) => void
-
-    selectedCamera: CameraState['selectedCamera']
   }
 }
 
@@ -109,18 +106,6 @@ export const Html5VisionLayout = forwardRef<Html5VisionLayoutRef, Html5VisionLay
     shallow,
   )
 
-  // const getVideoFrame = useCallback(() => {
-  //   if (selectedCamera?.stream && isGettingVideoFrames) {
-  //     if (mainRef.current?.videoRef.current) {
-  //       const image = captureImageFromVideo(mainRef.current?.videoRef.current).toImageData()
-
-  //       if (image) {
-  //         videoFrameCallback(image)
-  //       }
-  //     }
-  //   }
-  // }, [isGettingVideoFrames, selectedCamera?.stream, videoFrameCallback])
-
   // handle ref impelmentations here
   useImperativeHandle(
     ref,
@@ -132,17 +117,8 @@ export const Html5VisionLayout = forwardRef<Html5VisionLayoutRef, Html5VisionLay
         setPosition,
         setActiveItem,
         hideActiveMenuPanel,
-        isVisible: isMenuVisible,
-        items: menuItems,
-        position: menuPosition,
       },
       camera: {
-        isAccessingCamera,
-        isCameraCouldNotStart,
-        isCameraNotFound,
-        isCameraPaused,
-        isCameraPermissionDenied,
-        selectedCamera: selectedCamera,
         captureScreenShot() {
           return {
             toImageData() {
@@ -185,16 +161,7 @@ export const Html5VisionLayout = forwardRef<Html5VisionLayoutRef, Html5VisionLay
     }),
     [
       addMenuItem,
-      // getVideoFrame,
       hideActiveMenuPanel,
-      isAccessingCamera,
-      isCameraCouldNotStart,
-      isCameraNotFound,
-      isCameraPaused,
-      isCameraPermissionDenied,
-      isMenuVisible,
-      menuItems,
-      menuPosition,
       removeMenuItemAt,
       selectedCamera,
       setActiveItem,
