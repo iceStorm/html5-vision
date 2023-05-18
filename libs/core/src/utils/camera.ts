@@ -17,6 +17,9 @@ export async function getCameraStream(constraints?: MediaStreamConstraints) {
       height: {
         ideal: 2160,
       },
+      facingMode: {
+        ideal: 'environment'
+      }
     },
   }
 

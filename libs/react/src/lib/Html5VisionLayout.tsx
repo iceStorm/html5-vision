@@ -32,7 +32,7 @@ export interface Html5VisionLayoutProps {
 }
 
 export type Html5VisionLayoutRef = {
-  menu: ConditionalPick<MenuState, () => void>
+  menu: ConditionalPick<MenuState, Function>
   camera: {
     captureScreenShot(specs?: ScreenshotProps): {
       toImageData(): ImageData | undefined
@@ -49,16 +49,14 @@ export type Html5VisionLayoutRef = {
 export const Html5VisionLayout = forwardRef<Html5VisionLayoutRef, Html5VisionLayoutProps>(function (props, ref) {
   const { loaderComponent, permissionDeniedComponent, cameraNotFoundComponent, useDefaultMenu } = props
 
-  const [isGettingVideoFrames, setIsGettingVideoFrames] = useState(false)
   const [videoFrameCallback, setVideoFrameCallback] = useState<(...args: any[]) => Promise<unknown>>(() => {
     return () =>
       Promise.resolve(() => {
         console.log('Start getting video frames...')
       })
   })
+  const [isGettingVideoFrames, setIsGettingVideoFrames] = useState(false)
   const [videoFrameDelay, setVideoFrameDelay] = useState(1000)
-
-  // const [videoFramesInterval, setVideoFramesInterval] = useState<NodeJS.Timer>()
   const videoFramesIntervalRef = useRef<NodeJS.Timer>()
 
   const [
